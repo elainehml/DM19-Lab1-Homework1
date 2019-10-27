@@ -36,3 +36,27 @@ def tokenize_text(text, remove_stopwords=False):
             # filters here
             tokens.append(word)
     return tokens
+
+def get_tokens(text):
+    lowers = text.lower()
+    #remove the punctuation using the character deletion step of translate
+    remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+    no_punctuation = lowers.translate(remove_punctuation_map)
+    tokens = nltk.word_tokenize(no_punctuation)
+    return tokens
+
+def stem_tokens(tokens, stemmer):
+    stemmed = []
+    for item in tokens:
+        stemmed.append(stemmer.stem(item))
+    return stemmed
+
+def TF(text):
+    tokens = get_tokens(text)
+    filtered = [w for w in tokens if not w in stopwords.words('english')]
+    stemmer = PorterStemmer()
+    stemmed = stem_tokens(filtered, stemmer)
+    count = Counter(stemmed)
+    print (count.most_common(20))
+    freq_df=pd.DataFrame.from_records(count.most_common(20),columns=['token','count'])
+    freq_df.plot(kind='bar',x='token');
