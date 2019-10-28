@@ -1,4 +1,13 @@
 import nltk
+import math
+import string
+import pandas as pd
+import numpy as np
+from nltk.corpus import stopwords
+from collections import Counter
+from nltk.stem.porter import *
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 """
 Helper functions for data mining lab session 2018 Fall Semester
@@ -60,3 +69,28 @@ def TF(text):
     print (count.most_common(20))
     freq_df=pd.DataFrame.from_records(count.most_common(20),columns=['token','count'])
     freq_df.plot(kind='bar',x='token');
+
+def wf(word, count_list):
+    return sum(count[word] for count in count_list if word in count)
+
+def n_containing(word, count_list):
+    return sum(1 for count in count_list if word in count)
+
+def ilf(word, count_list):
+    return int(len(count_list) / (n_containing(word, count_list)))
+
+def wfilf(word, count, count_list):
+    return wf(word, countlist) * ilf(word, count_list)
+
+def sort_by_value(d):
+    
+    items=d.items()
+
+    backitems=[[v[1],v[0]] for v in items]
+
+    backitems.sort(reverse=True)
+
+    return [ backitems[i][1] for i in range(0,len(backitems))]
+
+
+
