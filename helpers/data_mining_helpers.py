@@ -5,8 +5,12 @@ import pandas as pd
 import numpy as np
 from nltk.corpus import stopwords
 from collections import Counter
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from nltk.stem.porter import *
 from sklearn.feature_extraction.text import TfidfVectorizer
+from textblob import TextBlob
+
 
 
 """
@@ -60,12 +64,32 @@ def stem_tokens(tokens, stemmer):
         stemmed.append(stemmer.stem(item))
     return stemmed
 
-def TF(text):
+def lemma_tokens(tokens,lemmatizer):
+    lemmaed = []
+    for item in tokens:
+        lemmaed.append(lemmatizer.lemmatize(item))
+    return lemmaed
+
+def postagging(text):
+    result = TextBlob(text)
+    return result.tags
+
+def TFs(text):
     tokens = get_tokens(text)
     filtered = [w for w in tokens if not w in stopwords.words('english')]
     stemmer = PorterStemmer()
     stemmed = stem_tokens(filtered, stemmer)
     count = Counter(stemmed)
+    print (count.most_common(20))
+    freq_df=pd.DataFrame.from_records(count.most_common(20),columns=['token','count'])
+    freq_df.plot(kind='bar',x='token');
+    
+def TFl(text):
+    tokens = get_tokens(text)
+    filtered = [w for w in tokens if not w in stopwords.words('english')]
+    lemmatizer=WordNetLemmatizer()
+    lemmaed = lemma_tokens(filtered, lemmatizer)
+    count = Counter(lemmaed)
     print (count.most_common(20))
     freq_df=pd.DataFrame.from_records(count.most_common(20),columns=['token','count'])
     freq_df.plot(kind='bar',x='token');
