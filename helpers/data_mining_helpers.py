@@ -50,13 +50,12 @@ def tokenize_text(text, remove_stopwords=False):
             tokens.append(word)
     return tokens
 
-def get_tokens(text):
+def lowercase_nopunc(text):
     lowers = text.lower()
     #remove the punctuation using the character deletion step of translate
     remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
-    no_punctuation = lowers.translate(remove_punctuation_map)
-    tokens = nltk.word_tokenize(no_punctuation)
-    return tokens
+    dealed = lowers.translate(remove_punctuation_map)
+    return dealed
 
 def stem_tokens(tokens, stemmer):
     stemmed = []
@@ -74,9 +73,14 @@ def postagging(text):
     result = TextBlob(text)
     return result.tags
 
-def TFs(text):
-    tokens = get_tokens(text)
+def stop_remove(tokens):
     filtered = [w for w in tokens if not w in stopwords.words('english')]
+    return filtered
+
+def TFs(text):
+    dealed = lowercase_nopunc(text)
+    tokens = tokenize_text(dealed)
+    filtered = stop_remove(tokens)
     stemmer = PorterStemmer()
     stemmed = stem_tokens(filtered, stemmer)
     count = Counter(stemmed)
@@ -85,8 +89,9 @@ def TFs(text):
     freq_df.plot(kind='bar',x='token');
     
 def TFl(text):
-    tokens = get_tokens(text)
-    filtered = [w for w in tokens if not w in stopwords.words('english')]
+    dealed = lowercase_nopunc(text)
+    tokens = tokenize_text(dealed)
+    filtered = stop_remove(tokens)
     lemmatizer=WordNetLemmatizer()
     lemmaed = lemma_tokens(filtered, lemmatizer)
     count = Counter(lemmaed)
